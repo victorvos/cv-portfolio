@@ -55,6 +55,8 @@ Data Engineer with Computer Science BSc, specializing in building data pipelines
 | **Web Scraping** | Crawl4AI, Playwright, BeautifulSoup |
 | **Frontend** | Jinja2, Leaflet.js, Socket.io, Tkinter |
 | **Testing** | pytest, Jest, unittest |
+| **Languages** | Dutch (Native), English (Fluent) |
+| **Legacy/Other** | Java, C#, .NET, Qlik Sense, Elastic Stack, SOAP, XML |
 
 ## Personal Projects
 
@@ -117,8 +119,36 @@ Suite of Python applications for automating media file management: server-to-NAS
 
 ## Work Experience
 
+### STB Automatisering | Data Intern
+**2018** | Houten, Netherlands
+
+Created fundraising analysis dashboards for charity organizations.
+
+- Developed Qlik Sense dashboards to map fundraising revenue
+- Tailored solutions for specific clients like "het Reumafonds"
+- **Technologies:** Qlik Sense, SQL
+
+### A.S.R. Verzekeringen N.V. | Data Science Graduate Intern
+**2019** | Utrecht, Netherlands
+
+Developed strategic HR dashboards for the Executive Board using the Elastic Stack.
+
+- Modeled job automation vulnerability using McKinsey robotics models
+- Implemented Elastic Stack for HR data visualization
+- **Technologies:** Elastic Stack (ELK), SQL, Excel
+
+### UWV | Data Analyst
+**2019 - 2021** | Utrecht, Netherlands
+
+Improved management insights by creating automated dashboards and data pipelines.
+
+- Built Excel dashboards fueled by data pipelines from multiple sources
+- Merged and transformed data using Power Query and SQL
+- Provided management with clear insights into service delivery order states
+- **Technologies:** Power BI, SQL, Power Query, Excel
+
 ### PGGM | Data Engineer / Automation Engineer
-**February 2023 - Present** | Zeist, Netherlands
+**January 2023 - Present** | Zeist, Netherlands
 
 Data Engineer specializing in automation solutions for pension fund administration. Building and maintaining data pipelines, ETL processes, and internal tooling for one of the largest pension fund service providers in the Netherlands.
 
@@ -135,6 +165,20 @@ Data Engineer specializing in automation solutions for pension fund administrati
 ## 📚 Education
 
 **Bachelor of Science in Computer Science**
+*HBO-ICT - Software & Information Engineering | Hogeschool Utrecht (2015 - 2019)*
+- Specialization in Software Architecture, Data Science, and Object-Oriented Analysis
+
+**BSc Econometrics and Operations Research** (Coursework)
+*University of Groningen (2012 - 2014)*
+
+**University Preparation Year**
+*Oxford, United Kingdom (2011 - 2012)*
+- International cultural exchange and advanced English studies
+
+### Academic Projects
+- **Air Quality Analysis (Vietnam):** IoT/BI project researching air quality using smart devices (Minor).
+- **Educational Math App:** Android application for children aged 4-12 (Java).
+- **E-commerce Platform:** Full-stack web shop implementation (Java/JavaScript).
 
 ---
 
