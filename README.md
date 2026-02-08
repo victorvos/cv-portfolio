@@ -1,0 +1,141 @@
+# Victor Vos - Data Engineer Portfolio
+
+Data Engineer with Computer Science BSc, specializing in building data pipelines, AI-powered applications, and full-stack web development. Proven experience architecting production systems that combine modern LLM technologies with robust backend infrastructure.
+
+## Table of Contents
+- [Core Competencies](#core-competencies)
+- [Technical Skills](#technical-skills)
+- [Personal Projects](#personal-projects)
+- [Work Experience](#work-experience)
+- [Education](#education)
+
+## Core Competencies
+
+### Data Engineering
+- ETL/ELT pipeline design and implementation
+- Cloud data warehouse integration (Snowflake, Firebase)
+- Data modeling and schema design
+- Real-time data processing with WebSockets
+- Vector database implementation for semantic search
+
+### AI & Machine Learning Integration
+- LLM orchestration with LangGraph and LangChain
+- Multi-model AI pipelines (Gemini, GPT, Grok, Perplexity)
+- Prompt engineering and agentic workflows
+- Vector embeddings for semantic similarity search
+
+### Backend Development
+- Python (FastAPI, Flask, Pydantic)
+- Node.js (Express, Socket.io)
+- Clean Architecture and SOLID principles
+- Async programming patterns
+
+### DevOps & Infrastructure
+- Docker containerization
+- Azure DevOps CI/CD pipelines
+- Cloud deployment (Hetzner, Firebase)
+- Caddy reverse proxy configuration
+
+### Test-Driven Development & AI-Assisted Programming
+- Test-first methodology enabling confident refactoring
+- Comprehensive test suites as living documentation
+- AI pair programming with test alignment for reduced errors
+- Tests serve as guardrails for AI-generated code validation
+- Rapid iteration cycles with automated regression detection
+
+## 📊 Technical Skills
+
+| Category | Technologies |
+|----------|-------------|
+| **Languages** | Python, JavaScript, TypeScript, SQL |
+| **Backend Frameworks** | FastAPI, Flask, Express.js |
+| **Data Platforms** | Snowflake, Firebase Firestore, Firebase Realtime DB |
+| **AI/ML** | LangGraph, LangChain, OpenAI API, Google Gemini, Grok, Perplexity |
+| **DevOps** | Docker, Azure DevOps, GitHub Actions |
+| **Web Scraping** | Crawl4AI, Playwright, BeautifulSoup |
+| **Frontend** | Jinja2, Leaflet.js, Socket.io, Tkinter |
+| **Testing** | pytest, Jest, unittest |
+
+## Personal Projects
+
+### [Darom - AI-Powered News Platform](projects/darom.md)
+**Production app live at [daromvibenews.com](https://daromvibenews.com)**
+
+Full-stack AI content generation platform with LangGraph-powered agentic workflows.
+
+**Key Technologies:** FastAPI, Firebase, Gemini 3 Flash, Grok, Perplexity, LangGraph, WebSockets
+
+**Highlights:**
+- Multi-agent article generation with automated fact-checking
+- Real-time WebSocket communication for live updates
+- Credit economy with reserve-and-refund billing system
+- 95% cost reduction through smart caching strategies
+
+---
+
+### [MapsAI - Real Estate Intelligence Platform](projects/mapsai.md)
+**AI-powered property visualization and analysis system**
+
+Interactive mapping platform that scrapes, processes, and visualizes real estate data with AI-powered insights.
+
+**Key Technologies:** FastAPI, Firebase, Crawl4AI, OpenAI, Leaflet.js, Vector Embeddings
+
+**Highlights:**
+- AI-powered web scraping with LLM data extraction
+- Interactive map with property clustering
+- Semantic search using vector embeddings
+- Real-time property updates via WebSockets
+
+---
+
+### [Snowflake Package Sync Pipeline](projects/snowflake-pipeline.md)
+**Enterprise CI/CD pipeline for Snowflake deployments**
+
+Automated tool for synchronizing Python packages from ProGet/PyPI to Snowflake internal stages.
+
+**Key Technologies:** Python, Snowflake, Azure DevOps, Azure Pipelines
+
+**Highlights:**
+- Automated package versioning and deployment
+- Azure DevOps pipeline integration
+- Unit tested with mocked external dependencies
+
+---
+
+### [Media Automation Suite](projects/media-automation.md)
+**Docker-based file transfer and organization tools**
+
+Suite of Python applications for automating media file management: server-to-NAS transfers with progress tracking, and ML-powered file organization.
+
+**Key Technologies:** Python, Docker, rclone, qBittorrent API, ML Classification
+
+**Highlights:**
+- Real-time transfer progress with stall detection and retry logic
+- ML-powered auto-classification learning from user decisions
+- Interactive CLI with rich terminal UI
+- Comprehensive test suite with integration tests
+
+## Work Experience
+
+### PGGM | Data Engineer / Automation Engineer
+**February 2023 - Present** | Zeist, Netherlands
+
+Data Engineer specializing in automation solutions for pension fund administration. Building and maintaining data pipelines, ETL processes, and internal tooling for one of the largest pension fund service providers in the Netherlands.
+
+**Key Responsibilities:**
+- Design and implement ETL pipelines for pension fund data processing
+- Develop Python CLI applications for internal automation workflows
+- Build API integrations to retrieve and synchronize data from external parties
+- Implement CI/CD pipelines using Azure DevOps for automated deployments
+- Database development and optimization for pension administration systems
+- Create and maintain unit tests to ensure code quality and enable safe refactoring
+
+**Technologies:** Python, SQL, Azure DevOps, CI/CD Pipelines, REST APIs, Database Development
+
+## 📚 Education
+
+**Bachelor of Science in Computer Science**
+
+---
+
+*Portfolio last updated: February 2026*
