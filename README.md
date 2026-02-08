@@ -76,6 +76,7 @@ Full-stack AI content generation platform with LangGraph-powered agentic workflo
 ---
 
 ### [MapsAI - Real Estate Intelligence Platform](projects/mapsai.md)
+**[maps.daromvibenews.com](https://maps.daromvibenews.com)**
 **AI-powered property visualization and analysis system**
 
 Interactive mapping platform that scrapes, processes, and visualizes real estate data with AI-powered insights.
