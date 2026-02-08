@@ -1,7 +1,5 @@
 # MapsAI - Real Estate Intelligence Platform
 
-# MapsAI - Real Estate Intelligence Platform
-
 **Live Demo:** [maps.daromvibenews.com](https://maps.daromvibenews.com)
 
 AI-powered property visualization and analysis system with intelligent web scraping.
