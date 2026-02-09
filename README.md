@@ -1,4 +1,4 @@
-# Victor Vos - Data Engineer Portfolio
+# Victor Vos - Data Engineering & AI Portfolio
 
 Data Engineer with Computer Science BSc, specializing in building data pipelines, AI-powered applications, and full-stack web development. Proven experience architecting production systems that combine modern LLM technologies with robust backend infrastructure.
 
