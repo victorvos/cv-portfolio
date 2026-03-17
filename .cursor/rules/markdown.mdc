@@ -54,6 +54,7 @@ Detailed API documentation.
 
 ### Diagram Examples
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff'}}}%%
 graph TB
     A[Start Process] --> B{Check Condition}
     B -->|Yes| C[Success Path]
@@ -137,6 +138,7 @@ const properties = await propertyService.fetchProperties({search: 'apartment'});
 ## System Architecture
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff'}}}%%
 graph TB
     subgraph "Frontend"
         A[Jinja2 Templates]

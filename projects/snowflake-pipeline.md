@@ -15,6 +15,7 @@ Enterprise CI/CD pipeline for synchronizing Python packages to Snowflake interna
 ## Architecture
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff'}}}%%
 graph LR
     subgraph "Package Sources"
         A[ProGet Registry]

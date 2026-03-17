@@ -45,6 +45,7 @@ We use a specific color palette for consistency:
 
 ### Example Flowchart
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff'}}}%%
 graph TB
     Start[User Request] --> Auth{Authenticated?}
     Auth -->|No| Login[Redirect to Login]
@@ -66,6 +67,7 @@ graph TB
 ### Styling Syntax
 Include this block at the end of your mermaid graph:
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff'}}}%%
     style NodeName fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000
 ```
 
