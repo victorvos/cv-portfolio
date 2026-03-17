@@ -1,0 +1,573 @@
+---
+name: Python Development Rules
+description: Comprehensive Python webapp development rules with operational guidelines
+globs: ["**/*.py"]
+alwaysApply: false
+---
+
+# Python Development Rules
+
+Comprehensive guidelines for Python webapp development with FastAPI, clean architecture, and modern practices. **Edit protocol:** follow `operational.mdc`.
+
+## 🏗️ Architecture Structure
+
+### Clean Architecture Layers
+```
+darom/
+├── core/              # Domain logic, entities, interfaces
+│   ├── entities/      # Pydantic models
+│   ├── interfaces/    # Abstract interfaces
+│   ├── services/      # Business logic
+│   └── config/        # Settings and configuration
+├── infrastructure/    # External services, repositories
+│   ├── repositories/  # Data access implementations
+│   ├── external_services/ # API clients
+│   └── cache/         # Caching implementations
+├── presentation/      # FastAPI routes and middleware
+│   ├── api/          # REST API routes
+│   ├── web/          # Web routes
+│   └── middleware/   # Custom middleware
+├── static/           # Static frontend assets
+│   ├── css/
+│   └── js/
+├── templates/        # Jinja2 HTML templates
+├── utils/            # Utility functions
+├── main.py           # FastAPI application entry point
+└── __init__.py
+```
+
+### File Naming Conventions
+- Use snake_case for files and directories
+- Use PascalCase for classes
+- Use UPPER_CASE for constants
+- Use descriptive names that indicate purpose
+
+## 🐍 Python Requirements
+
+### Target Version
+- **Python 3.12 or higher**
+
+### Object-Oriented Principles
+- Emphasize Encapsulation, Inheritance, and Polymorphism
+- Apply SOLID principles (Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion)
+- Prefer composition over inheritance where it leads to more flexible and decoupled designs
+
+### Type Hinting
+- Mandate usage of Python's type hinting (PEP 484) for all new code
+- Include function arguments, return values, and variables
+- Use types from the `typing` module (e.g., `List`, `Dict`, `Optional`, `Callable`, `Any`)
+
+### Docstrings
+- Require Google-style docstrings for all modules, classes, public functions, and methods
+- Docstrings should clearly explain the purpose, arguments, return values, and any exceptions raised
+
+```python
+def example_function(param1: int, param2: str) -> bool:
+    """Example function demonstrating docstring format.
+
+    Args:
+        param1 (int): The first parameter.
+        param2 (str): The second parameter.
+
+    Returns:
+        bool: True if successful, False otherwise.
+
+    Raises:
+        ValueError: If param1 is negative.
+    """
+    if param1 < 0:
+        raise ValueError("param1 cannot be negative")
+    return True
+```
+
+### Linters & Formatters
+- **Black**: Use Black for automatic code formatting
+- **Flake8/Pylint**: Use Flake8 (with plugins like `flake8-bugbear`, `flake8-comprehensions`) or Pylint
+- Configuration should be present in the project (e.g., `pyproject.toml` for Black, `.flake8` for Flake8)
+
+### Testing
+- Standardize on `pytest` for writing and running unit, integration, and functional tests
+- Tests should be placed in a `tests/` directory, mirroring the project structure
+- Aim for high test coverage
+
+### Virtual Environments
+- Mandate the use of `venv` (Python's built-in module) for creating isolated project environments
+- A `venv` folder (e.g., `.venv`) should be present in the project root and added to `.gitignore`
+
+### Dependency Management
+- Use `uv pip` for installing dependencies
+- All project dependencies must be listed in a `requirements.txt` file in the project root
+- Use `pip freeze > requirements.txt` to update the file after adding new dependencies
+- Consider using `pip-tools` (`pip-compile`) for managing `requirements.txt` from a `requirements.in` file
+
+### Error Handling
+- Use custom exceptions for domain-specific errors (e.g., `InvalidPropertyDataError`)
+- These should typically inherit from base Python exceptions
+- Use standard `try-except` blocks for handling expected errors gracefully
+- Avoid overly broad `except Exception:` clauses; catch specific exceptions where possible
+
+### Logging
+- Utilize Python's built-in `logging` module for all application logging
+- Configure loggers at the module level.
+- Use appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
+### Imports
+- Use absolute imports for modules (e.g., `from core.services import ...`)
+- Follow PEP 8 guidelines for import ordering (standard library, third-party, local application)
+
+## 🚀 FastAPI Application Structure
+
+### Main Application Setup
+```python
+# main.py - Application entry point
+from fastapi import FastAPI
+from core.container import Container
+from presentation.api.routes import router as api_router
+from presentation.web.routes import router as web_router
+
+def create_app() -> FastAPI:
+    """Create and configure the FastAPI application."""
+    app = FastAPI(
+        title="Darom",
+        version="1.0.0",
+        description="AI-powered news and content platform"
+    )
+
+    # Dependency injection
+    container = Container()
+    container.wire(packages=["core", "infrastructure", "presentation"])
+
+    # Route registration
+    app.include_router(api_router, prefix="/api")
+    app.include_router(web_router)
+
+    return app
+```
+
+### Service Layer Pattern
+```python
+# core/services/article_service.py
+from abc import ABC, abstractmethod
+from typing import List, Optional
+from core.entities.article import Article
+from core.interfaces.article_repository import ArticleRepository
+
+class ArticleService:
+    """Service for managing article operations."""
+
+    def __init__(self, repository: ArticleRepository):
+        self._repository = repository
+
+    async def get_articles(self, filters: dict = None) -> List[Article]:
+        """Get articles with optional filtering."""
+        return await self._repository.find_all(filters)
+
+    async def get_article(self, article_id: str) -> Article:
+        """Get a single article by ID."""
+        article = await self._repository.find_by_id(article_id)
+        if not article:
+            raise ArticleNotFoundError(f"Article {article_id} not found")
+        return article
+```
+
+## 📊 Pydantic Models
+
+### Entity Models
+```python
+# core/entities/article.py
+from pydantic import BaseModel, Field, validator
+from typing import Optional, List
+from datetime import datetime
+
+class Article(BaseModel):
+    """Article entity with validation."""
+
+    id: Optional[str] = None
+    title: str = Field(..., min_length=1, max_length=200)
+    content: str = Field(..., min_length=1)
+    author: str = Field(..., min_length=1, max_length=100)
+    tags: List[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: Optional[datetime] = None
+
+    @validator('tags')
+    def validate_tags(cls, v):
+        if len(v) > 10:
+            raise ValueError('Maximum 10 tags allowed')
+        return v
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+```
+
+### Request/Response Models
+```python
+# presentation/api/models.py
+from pydantic import BaseModel
+from typing import List, Optional
+
+class ArticleCreateRequest(BaseModel):
+    """Request model for creating articles."""
+    title: str
+    content: str
+    author: str
+    tags: List[str] = []
+
+class ArticleResponse(BaseModel):
+    """Response model for article data."""
+    id: str
+    title: str
+    content: str
+    author: str
+    created_at: str
+```
+
+## 🚨 Error Handling
+
+### Custom Exception Hierarchy
+```python
+# core/exceptions.py
+class ArticleServiceError(Exception):
+    """Base exception for article service errors."""
+    pass
+
+class ArticleNotFoundError(ArticleServiceError):
+    """Raised when article is not found."""
+    pass
+
+class ValidationError(ArticleServiceError):
+    """Raised when article data validation fails."""
+    pass
+
+class DatabaseError(ArticleServiceError):
+    """Raised when database operation fails."""
+    pass
+```
+
+### Error Handling in Routes
+```python
+# presentation/api/routes.py
+from fastapi import APIRouter, HTTPException, Depends
+from core.services.article_service import ArticleService
+from core.exceptions import ArticleNotFoundError
+
+router = APIRouter()
+
+@router.get("/articles/{article_id}")
+async def get_article(
+    article_id: str,
+    service: ArticleService = Depends()
+):
+    """Get an article by ID."""
+    try:
+        article = await service.get_article(article_id)
+        return article
+    except ArticleNotFoundError:
+        raise HTTPException(status_code=404, detail="Article not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+```
+
+## 🔧 Dependency Injection
+
+### Container Configuration
+```python
+# core/container.py
+from dependency_injector import containers, providers
+from core.services.article_service import ArticleService
+from infrastructure.repositories.firebase_article_repository import FirebaseArticleRepository
+
+class Container(containers.DeclarativeContainer):
+    """Dependency injection container."""
+
+    # Configuration
+    config = providers.Configuration()
+
+    # Repositories
+    article_repository = providers.Factory(
+        FirebaseArticleRepository,
+        config=config.firebase
+    )
+
+    # Services
+    article_service = providers.Factory(
+        ArticleService,
+        repository=article_repository
+    )
+```
+
+### Repository Pattern
+```python
+# core/interfaces/article_repository.py
+from abc import ABC, abstractmethod
+from typing import List, Optional
+from core.entities.article import Article
+
+class ArticleRepository(ABC):
+    """Abstract repository for article data access."""
+
+    @abstractmethod
+    async def find_all(self, filters: dict = None) -> List[Article]:
+        """Find all articles with optional filters."""
+        pass
+
+    @abstractmethod
+    async def find_by_id(self, article_id: str) -> Optional[Article]:
+        """Find article by ID."""
+        pass
+
+    @abstractmethod
+    async def save(self, article: Article) -> Article:
+        """Save article to database."""
+        pass
+```
+
+## 📝 Logging and Monitoring
+
+### Structured Logging
+```python
+# utils/logging_utils.py
+import logging
+import json
+from typing import Any, Dict
+
+class StructuredLogger:
+    """Structured logger for application events."""
+
+    def __init__(self, name: str, level: str = "INFO"):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(getattr(logging, level.upper()))
+
+    def log_article_operation(self, operation: str, article_id: str, **kwargs):
+        """Log article operations with structured data."""
+        self.logger.info("Article operation", extra={
+            'event': 'article_operation',
+            'operation': operation,
+            'article_id': article_id,
+            **kwargs
+        })
+
+    def log_api_request(self, method: str, path: str, status_code: int, **kwargs):
+        """Log API requests with structured data."""
+        self.logger.info("API request", extra={
+            'event': 'api_request',
+            'method': method,
+            'path': path,
+            'status_code': status_code,
+            **kwargs
+        })
+```
+
+### Configuration Management
+```python
+# core/config.py
+from pydantic import BaseSettings
+from typing import List
+
+class Settings(BaseSettings):
+    """Application settings with environment variable support."""
+
+    # Application
+    app_name: str = "Darom"
+    app_version: str = "1.0.0"
+    debug: bool = False
+
+    # Database
+    firebase_project_id: str
+    firebase_credentials_path: str
+
+    # External Services
+    openai_api_key: str
+    xai_api_key: str
+    twitter_api_key: str
+
+    # CORS
+    cors_origins: List[str] = ["http://localhost:3000"]
+
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
+
+def get_settings() -> Settings:
+    """Get application settings."""
+    return Settings()
+```
+
+## 🧪 Testing Patterns
+
+### Unit Testing
+```python
+# tests/unit/core/test_article_service.py
+import pytest
+from unittest.mock import Mock, AsyncMock
+from core.services.article_service import ArticleService
+from core.entities.article import Article
+from core.exceptions import ArticleNotFoundError
+
+class TestArticleService:
+    """Test cases for ArticleService."""
+
+    @pytest.fixture
+    def mock_repository(self):
+        return Mock()
+
+    @pytest.fixture
+    def service(self, mock_repository):
+        return ArticleService(mock_repository)
+
+    @pytest.mark.asyncio
+    async def test_get_article_success(self, service, mock_repository):
+        """Test successful article retrieval."""
+        # Arrange
+        article_id = "test-id"
+        expected_article = Article(
+            id=article_id,
+            title="Test Article",
+            content="Test content",
+            author="Test Author"
+        )
+        mock_repository.find_by_id.return_value = expected_article
+
+        # Act
+        result = await service.get_article(article_id)
+
+        # Assert
+        assert result == expected_article
+        mock_repository.find_by_id.assert_called_once_with(article_id)
+
+    @pytest.mark.asyncio
+    async def test_get_article_not_found(self, service, mock_repository):
+        """Test article not found scenario."""
+        # Arrange
+        article_id = "non-existent"
+        mock_repository.find_by_id.return_value = None
+
+        # Act & Assert
+        with pytest.raises(ArticleNotFoundError):
+            await service.get_article(article_id)
+```
+
+### Integration Testing
+```python
+# tests/integration/test_api_routes.py
+import pytest
+from fastapi.testclient import TestClient
+from main import create_app
+
+class TestArticleAPI:
+    """Integration tests for article API endpoints."""
+
+    @pytest.fixture
+    def client(self):
+        app = create_app()
+        return TestClient(app)
+
+    def test_get_articles(self, client):
+        """Test GET /api/articles endpoint."""
+        response = client.get("/api/articles")
+        assert response.status_code == 200
+        assert isinstance(response.json(), list)
+
+    def test_get_article_not_found(self, client):
+        """Test GET /api/articles/{id} with non-existent ID."""
+        response = client.get("/api/articles/non-existent")
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"].lower()
+```
+
+## 🗄️ Database Requirements
+
+### Primary Database
+- **Firebase Firestore** (NoSQL Document Database)
+- Use the `firebase-admin` Python SDK for backend operations
+
+### Data Modeling
+- Design data structures appropriate for a NoSQL document store
+- Denormalization where beneficial for read performance
+- Carefully consider queries and define schemas for collections and documents
+- Implement robust Firestore security rules to protect data
+- Define necessary composite indexes in Firebase console for complex queries
+
+## 🤖 AI Services Integration
+
+### Primary AI Services
+- **OpenAI API** - Primary AI service
+- **XAI (Grok)** - Advanced AI analysis
+- **Twitter API** - Social media data
+
+### Client Libraries
+- Utilize the official `openai` Python library for OpenAI interactions
+- Use custom XAI client for Grok interactions
+- Use `tweepy` or `twitter-api-python` for Twitter interactions
+
+### API Key Management
+- API keys MUST NOT be hardcoded
+- Load keys securely via environment variables or configuration service
+- Ensure API keys are included in `.gitignore` if stored in local files (e.g., `.env`)
+
+### Usage Guidelines
+- Specify model versions explicitly (e.g., `gpt-4-turbo`, `grok-beta`)
+- Implement retry mechanisms for API calls to handle transient network issues
+- Be mindful of rate limits and implement appropriate backoff strategies
+- Log API requests and responses (excluding sensitive data) for debugging and monitoring
+- Consider cost implications: choose models appropriate for the task, optimize prompt lengths, and monitor usage
+
+### Error Handling
+- Handle API-specific errors gracefully (e.g., authentication errors, rate limit errors, model overload)
+
+## 🔒 Security Considerations
+
+### Input Sanitization
+- Sanitize all user inputs on the frontend and backend to prevent XSS, injection attacks, etc.
+
+### Database Security
+- Use Firebase SDK methods which inherently protect against NoSQL injection vulnerabilities
+- Do not construct queries by string concatenation with user input
+
+### Content Security Policy (CSP)
+- Implement a strong CSP to mitigate XSS and other injection attacks
+
+### Authentication & Authorization
+- Implement robust authentication for user access
+- Enforce role-based access control (RBAC) or permission checks for sensitive operations
+
+### Dependency Security
+- Regularly scan project dependencies for known vulnerabilities using tools like `pip-audit`
+- Protect API keys for OpenAI, Firebase, and other services
+- Do not commit them to the repository
+
+### Logging & Monitoring
+- Implement detailed internal logging and monitoring to detect and respond to security incidents
+- Log security-relevant events
+
+### Firebase Security Rules
+- Crucial for protecting data in Firestore and Firebase Storage
+- Ensure rules are restrictive and well-tested
+
+### Rate Limiting
+- Implement rate limiting on API endpoints to prevent abuse
+
+## 🚀 Key Principles
+
+### Code Quality Standards
+- **Type Hints**: Always use type hints for function parameters and return values
+- **Documentation**: Google-style docstrings for all public methods
+- **Error Handling**: Custom exceptions with clear hierarchy
+- **Testing**: Unit tests for business logic, integration tests for APIs
+- **Logging**: Structured logging with context
+
+### Performance Guidelines
+- Use async/await for I/O operations
+- Implement proper caching strategies
+- Use connection pooling for databases
+- Monitor with structured logging
+
+### Security Best Practices
+- Input validation with Pydantic
+- Rate limiting on API endpoints
+- Secure environment variable management
+- Proper error handling without information leakage
+
+This comprehensive approach ensures clean, maintainable Python backend code that integrates seamlessly with frontend components while following operational best practices.

@@ -1,0 +1,703 @@
+---
+name: LangChain Python Integration Rules
+description: Comprehensive rules for implementing LangChain agents with clean OO architecture
+globs: ["**/*.py"]
+alwaysApply: false
+---
+
+# LangChain Python Integration Rules
+
+## 1. LangChain Architecture Patterns
+
+### Agent-Based Architecture
+```python
+from abc import ABC, abstractmethod
+from typing import List, Dict, Any, Optional
+from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain.tools import BaseTool
+from langchain.schema import BaseMessage, HumanMessage, AIMessage
+from langchain.vectorstores import VectorStore
+from langchain.embeddings import Embeddings
+
+class TwitterDataAgent(ABC):
+    """Abstract base class for Twitter data processing agents."""
+
+    def __init__(self,
+                 vector_store: VectorStore,
+                 embeddings: Embeddings,
+                 tools: List[BaseTool]):
+        self.vector_store = vector_store
+        self.embeddings = embeddings
+        self.tools = tools
+        self.agent_executor: Optional[AgentExecutor] = None
+
+    @abstractmethod
+    def create_agent(self) -> AgentExecutor:
+        """Create and configure the agent executor."""
+        pass
+
+    @abstractmethod
+    def process_twitter_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process Twitter data using the agent."""
+        pass
+```
+
+### Vector Store Integration
+```python
+from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings
+from langchain_core.documents import Document
+from typing import List, Optional
+import os
+
+class TwitterVectorStore:
+    """Manages Twitter data vector storage using ChromaDB."""
+
+    def __init__(self,
+                 db_path: str = "./twitter_vector_db",
+                 embedding_model: str = "mxbai-embed-large"):
+        self.db_path = db_path
+        self.embeddings = OllamaEmbeddings(model=embedding_model)
+        self.vector_store: Optional[Chroma] = None
+        self._initialize_store()
+
+    def _initialize_store(self):
+        """Initialize the vector store."""
+        if not os.path.exists(self.db_path):
+            self.vector_store = Chroma(
+                persist_directory=self.db_path,
+                embedding_function=self.embeddings
+            )
+        else:
+            self.vector_store = Chroma(
+                persist_directory=self.db_path,
+                embedding_function=self.embeddings
+            )
+
+    def add_twitter_documents(self, documents: List[Document]) -> List[str]:
+        """Add Twitter documents to the vector store."""
+        if not self.vector_store:
+            raise ValueError("Vector store not initialized")
+
+        return self.vector_store.add_documents(documents)
+
+    def similarity_search(self, query: str, k: int = 5) -> List[Document]:
+        """Search for similar Twitter content."""
+        if not self.vector_store:
+            raise ValueError("Vector store not initialized")
+
+        return self.vector_store.similarity_search(query, k=k)
+```
+
+## 2. Service Layer Pattern for LangChain
+
+### Twitter Data Processing Service
+```python
+from dataclasses import dataclass
+from datetime import datetime
+from typing import List, Dict, Any, Optional
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+@dataclass
+class TwitterData:
+    """Data model for Twitter content."""
+    tweet_id: str
+    content: str
+    author: str
+    timestamp: datetime
+    hashtags: List[str]
+    mentions: List[str]
+    engagement_metrics: Dict[str, int]
+    sentiment_score: Optional[float] = None
+    topic_tags: List[str] = None
+
+    def __post_init__(self):
+        if self.topic_tags is None:
+            self.topic_tags = []
+
+class TwitterDataProcessor:
+    """Processes and prepares Twitter data for RAG."""
+
+    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200):
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
+        )
+
+    def process_twitter_data(self, tweets: List[TwitterData]) -> List[Document]:
+        """Convert Twitter data to LangChain documents."""
+        documents = []
+
+        for tweet in tweets:
+            # Create metadata
+            metadata = {
+                "tweet_id": tweet.tweet_id,
+                "author": tweet.author,
+                "timestamp": tweet.timestamp.isoformat(),
+                "hashtags": tweet.hashtags,
+                "mentions": tweet.mentions,
+                "engagement_metrics": tweet.engagement_metrics,
+                "sentiment_score": tweet.sentiment_score,
+                "topic_tags": tweet.topic_tags
+            }
+
+            # Create document content
+            content = self._format_tweet_content(tweet)
+
+            # Split content into chunks if needed
+            chunks = self.text_splitter.split_text(content)
+
+            for i, chunk in enumerate(chunks):
+                doc = Document(
+                    page_content=chunk,
+                    metadata={**metadata, "chunk_index": i}
+                )
+                documents.append(doc)
+
+        return documents
+
+    def _format_tweet_content(self, tweet: TwitterData) -> str:
+        """Format tweet content for better processing."""
+        content_parts = [
+            f"Content: {tweet.content}",
+            f"Author: {tweet.author}",
+            f"Hashtags: {', '.join(tweet.hashtags)}",
+            f"Mentions: {', '.join(tweet.mentions)}",
+            f"Engagement: {tweet.engagement_metrics}",
+            f"Timestamp: {tweet.timestamp.isoformat()}"
+        ]
+
+        if tweet.sentiment_score is not None:
+            content_parts.append(f"Sentiment: {tweet.sentiment_score}")
+
+        if tweet.topic_tags:
+            content_parts.append(f"Topics: {', '.join(tweet.topic_tags)}")
+
+        return "\n".join(content_parts)
+```
+
+## 3. Agent Tools Implementation
+
+### Custom Twitter Analysis Tools
+```python
+from langchain.tools import BaseTool
+from typing import Type, Optional
+from pydantic import BaseModel, Field
+
+class TwitterAnalysisInput(BaseModel):
+    """Input schema for Twitter analysis tool."""
+    query: str = Field(description="The search query for Twitter analysis")
+    limit: int = Field(default=10, description="Maximum number of results to analyze")
+
+class TwitterAnalysisTool(BaseTool):
+    """Tool for analyzing Twitter data using vector search."""
+
+    name = "twitter_analysis"
+    description = "Analyze Twitter data by searching similar content and extracting insights"
+    args_schema: Type[BaseModel] = TwitterAnalysisInput
+
+    def __init__(self, vector_store: TwitterVectorStore):
+        super().__init__()
+        self.vector_store = vector_store
+
+    def _run(self, query: str, limit: int = 10) -> str:
+        """Execute Twitter analysis."""
+        try:
+            # Search for similar content
+            similar_docs = self.vector_store.similarity_search(query, k=limit)
+
+            # Extract insights
+            insights = self._extract_insights(similar_docs, query)
+
+            return insights
+        except Exception as e:
+            return f"Error analyzing Twitter data: {str(e)}"
+
+    def _extract_insights(self, documents: List[Document], query: str) -> str:
+        """Extract insights from similar documents."""
+        insights = []
+
+        # Group by author
+        authors = {}
+        hashtags = set()
+        sentiments = []
+
+        for doc in documents:
+            metadata = doc.metadata
+            author = metadata.get("author", "Unknown")
+
+            if author not in authors:
+                authors[author] = 0
+            authors[author] += 1
+
+            hashtags.update(metadata.get("hashtags", []))
+
+            if metadata.get("sentiment_score"):
+                sentiments.append(metadata["sentiment_score"])
+
+        # Generate insights
+        insights.append(f"Analysis for query: '{query}'")
+        insights.append(f"Found {len(documents)} relevant tweets")
+
+        if authors:
+            top_authors = sorted(authors.items(), key=lambda x: x[1], reverse=True)[:3]
+            insights.append(f"Top authors: {', '.join([f'{author} ({count})' for author, count in top_authors])}")
+
+        if hashtags:
+            insights.append(f"Related hashtags: {', '.join(list(hashtags)[:10])}")
+
+        if sentiments:
+            avg_sentiment = sum(sentiments) / len(sentiments)
+            insights.append(f"Average sentiment: {avg_sentiment:.2f}")
+
+        return "\n".join(insights)
+
+class ArticleImprovementTool(BaseTool):
+    """Tool for improving articles based on Twitter data insights."""
+
+    name = "article_improvement"
+    description = "Improve article content based on Twitter data analysis"
+    args_schema: Type[BaseModel] = TwitterAnalysisInput
+
+    def __init__(self, vector_store: TwitterVectorStore):
+        super().__init__()
+        self.vector_store = vector_store
+
+    def _run(self, query: str, limit: int = 10) -> str:
+        """Generate article improvement suggestions."""
+        try:
+            # Get Twitter insights
+            similar_docs = self.vector_store.similarity_search(query, k=limit)
+
+            # Generate improvement suggestions
+            suggestions = self._generate_suggestions(similar_docs, query)
+
+            return suggestions
+        except Exception as e:
+            return f"Error generating improvement suggestions: {str(e)}"
+
+    def _generate_suggestions(self, documents: List[Document], query: str) -> str:
+        """Generate article improvement suggestions."""
+        suggestions = []
+
+        # Analyze trending topics
+        trending_topics = {}
+        for doc in documents:
+            topics = doc.metadata.get("topic_tags", [])
+            for topic in topics:
+                trending_topics[topic] = trending_topics.get(topic, 0) + 1
+
+        if trending_topics:
+            top_topics = sorted(trending_topics.items(), key=lambda x: x[1], reverse=True)[:5]
+            suggestions.append("Trending topics to consider:")
+            for topic, count in top_topics:
+                suggestions.append(f"- {topic} (mentioned {count} times)")
+
+        # Analyze sentiment patterns
+        sentiments = [doc.metadata.get("sentiment_score") for doc in documents if doc.metadata.get("sentiment_score")]
+        if sentiments:
+            avg_sentiment = sum(sentiments) / len(sentiments)
+            if avg_sentiment > 0.5:
+                suggestions.append("Positive sentiment detected - emphasize benefits and success stories")
+            elif avg_sentiment < -0.5:
+                suggestions.append("Negative sentiment detected - address concerns and provide solutions")
+            else:
+                suggestions.append("Mixed sentiment - provide balanced perspective")
+
+        # Engagement insights
+        engagement_scores = []
+        for doc in documents:
+            metrics = doc.metadata.get("engagement_metrics", {})
+            total_engagement = sum(metrics.values())
+            engagement_scores.append(total_engagement)
+
+        if engagement_scores:
+            avg_engagement = sum(engagement_scores) / len(engagement_scores)
+            suggestions.append(f"Average engagement level: {avg_engagement:.1f}")
+            if avg_engagement > 100:
+                suggestions.append("High engagement topic - consider creating detailed content")
+            elif avg_engagement < 10:
+                suggestions.append("Low engagement topic - focus on compelling headlines and hooks")
+
+        return "\n".join(suggestions) if suggestions else "No specific suggestions available"
+```
+
+## 4. Agent Factory Pattern
+
+### Agent Factory Implementation
+```python
+from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.schema import SystemMessage
+from typing import Dict, Any, Optional
+
+class TwitterAgentFactory:
+    """Factory for creating Twitter data processing agents."""
+
+    @staticmethod
+    def create_twitter_analysis_agent(
+        vector_store: TwitterVectorStore,
+        llm_model: Any,
+        tools: List[BaseTool]
+    ) -> AgentExecutor:
+        """Create a Twitter analysis agent."""
+
+        # Define the system prompt
+        system_prompt = SystemMessage(content="""
+        You are a Twitter data analysis expert. Your role is to:
+        1. Analyze Twitter data using the provided tools
+        2. Extract insights about trending topics, sentiment, and engagement
+        3. Provide actionable recommendations for content improvement
+        4. Focus on data-driven insights rather than speculation
+
+        Always use the available tools to gather data before making conclusions.
+        Be specific and cite evidence from the Twitter data when making recommendations.
+        """)
+
+        # Create the prompt template
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", "{input}"),
+            MessagesPlaceholder(variable_name="agent_scratchpad")
+        ])
+
+        # Create the agent
+        agent = create_openai_functions_agent(llm_model, tools, prompt)
+
+        # Create the agent executor
+        agent_executor = AgentExecutor(
+            agent=agent,
+            tools=tools,
+            verbose=True,
+            return_intermediate_steps=True
+        )
+
+        return agent_executor
+
+    @staticmethod
+    def create_article_improvement_agent(
+        vector_store: TwitterVectorStore,
+        llm_model: Any,
+        tools: List[BaseTool]
+    ) -> AgentExecutor:
+        """Create an article improvement agent."""
+
+        system_prompt = SystemMessage(content="""
+        You are an expert content strategist specializing in Twitter data analysis.
+        Your role is to:
+        1. Analyze Twitter data to understand audience interests and sentiment
+        2. Provide specific suggestions for improving article content
+        3. Identify trending topics and hashtags to incorporate
+        4. Suggest content angles that resonate with the Twitter audience
+        5. Recommend engagement strategies based on data patterns
+
+        Always base your recommendations on actual Twitter data analysis.
+        Provide specific, actionable suggestions that can be implemented immediately.
+        """)
+
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", "{input}"),
+            MessagesPlaceholder(variable_name="agent_scratchpad")
+        ])
+
+        agent = create_openai_functions_agent(llm_model, tools, prompt)
+
+        agent_executor = AgentExecutor(
+            agent=agent,
+            tools=tools,
+            verbose=True,
+            return_intermediate_steps=True
+        )
+
+        return agent_executor
+```
+
+## 5. Integration with Existing Darom Architecture
+
+### Service Integration Pattern
+```python
+from core.container import Container
+from infrastructure.external_services.twitter_service import TwitterService
+from typing import Dict, Any, List
+
+class TwitterDataFlowService:
+    """Main service for Twitter data flow management."""
+
+    def __init__(self,
+                 container: Container,
+                 vector_store: TwitterVectorStore,
+                 data_processor: TwitterDataProcessor):
+        self.container = container
+        self.vector_store = vector_store
+        self.data_processor = data_processor
+        self.twitter_service = container.twitter_service()
+        self.news_orchestrator = container.news_orchestrator_service()
+
+    async def process_twitter_data_flow(self, topic: str) -> Dict[str, Any]:
+        """Process Twitter data flow for a given topic."""
+        try:
+            # 1. Fetch Twitter data
+            twitter_data = await self._fetch_twitter_data(topic)
+
+            # 2. Process and store in vector database
+            documents = self.data_processor.process_twitter_data(twitter_data)
+            doc_ids = self.vector_store.add_twitter_documents(documents)
+
+            # 3. Analyze data using LangChain agent
+            analysis_result = await self._analyze_twitter_data(topic)
+
+            # 4. Generate improvement suggestions
+            improvement_suggestions = await self._generate_improvements(topic)
+
+            return {
+                "topic": topic,
+                "tweets_processed": len(twitter_data),
+                "documents_created": len(documents),
+                "analysis_result": analysis_result,
+                "improvement_suggestions": improvement_suggestions,
+                "status": "success"
+            }
+
+        except Exception as e:
+            return {
+                "topic": topic,
+                "status": "error",
+                "error": str(e)
+            }
+
+    async def _fetch_twitter_data(self, topic: str) -> List[TwitterData]:
+        """Fetch Twitter data for the given topic."""
+        # Use existing Twitter service to fetch data
+        raw_tweets = await self.twitter_service.search_tweets(topic, limit=100)
+
+        # Convert to TwitterData objects
+        twitter_data = []
+        for tweet in raw_tweets:
+            data = TwitterData(
+                tweet_id=tweet.get("id"),
+                content=tweet.get("text", ""),
+                author=tweet.get("author", {}).get("username", "Unknown"),
+                timestamp=datetime.fromisoformat(tweet.get("created_at", "")),
+                hashtags=tweet.get("entities", {}).get("hashtags", []),
+                mentions=tweet.get("entities", {}).get("mentions", []),
+                engagement_metrics={
+                    "likes": tweet.get("public_metrics", {}).get("like_count", 0),
+                    "retweets": tweet.get("public_metrics", {}).get("retweet_count", 0),
+                    "replies": tweet.get("public_metrics", {}).get("reply_count", 0)
+                }
+            )
+            twitter_data.append(data)
+
+        return twitter_data
+
+    async def _analyze_twitter_data(self, topic: str) -> Dict[str, Any]:
+        """Analyze Twitter data using LangChain agent."""
+        # This would use the Twitter analysis agent
+        # Implementation depends on specific agent setup
+        pass
+
+    async def _generate_improvements(self, topic: str) -> Dict[str, Any]:
+        """Generate article improvement suggestions."""
+        # This would use the article improvement agent
+        # Implementation depends on specific agent setup
+        pass
+```
+
+## 6. Error Handling and Logging
+
+### LangChain Specific Error Handling
+```python
+from typing import Optional
+import logging
+
+class LangChainError(Exception):
+    """Base exception for LangChain operations."""
+    pass
+
+class VectorStoreError(LangChainError):
+    """Raised when vector store operations fail."""
+    pass
+
+class AgentExecutionError(LangChainError):
+    """Raised when agent execution fails."""
+    pass
+
+class TwitterDataProcessingError(LangChainError):
+    """Raised when Twitter data processing fails."""
+    pass
+
+class TwitterDataFlowLogger:
+    """Structured logger for Twitter data flow operations."""
+
+    def __init__(self, name: str = "twitter_data_flow"):
+        self.logger = logging.getLogger(name)
+
+    def log_data_processing_start(self, topic: str, tweet_count: int):
+        """Log the start of data processing."""
+        self.logger.info("Starting Twitter data processing", extra={
+            'event': 'data_processing_start',
+            'topic': topic,
+            'tweet_count': tweet_count
+        })
+
+    def log_vector_store_operation(self, operation: str, document_count: int):
+        """Log vector store operations."""
+        self.logger.info("Vector store operation", extra={
+            'event': 'vector_store_operation',
+            'operation': operation,
+            'document_count': document_count
+        })
+
+    def log_agent_execution(self, agent_type: str, query: str, success: bool):
+        """Log agent execution."""
+        level = logging.INFO if success else logging.ERROR
+        self.logger.log(level, "Agent execution", extra={
+            'event': 'agent_execution',
+            'agent_type': agent_type,
+            'query': query,
+            'success': success
+        })
+
+    def log_error(self, error_type: str, error_message: str, context: Optional[Dict] = None):
+        """Log errors with context."""
+        self.logger.error("Operation failed", extra={
+            'event': 'error',
+            'error_type': error_type,
+            'error_message': error_message,
+            'context': context or {}
+        })
+```
+
+## 7. Configuration Management
+
+### LangChain Configuration
+```python
+from pydantic import BaseSettings
+from typing import Optional, List
+
+class LangChainConfig(BaseSettings):
+    """Configuration for LangChain components."""
+
+    # Vector Store Configuration
+    vector_db_path: str = "./twitter_vector_db"
+    embedding_model: str = "mxbai-embed-large"
+    chunk_size: int = 1000
+    chunk_overlap: int = 200
+
+    # Agent Configuration
+    agent_temperature: float = 0.1
+    agent_max_tokens: int = 2000
+    agent_max_iterations: int = 10
+
+    # Twitter Data Configuration
+    max_tweets_per_topic: int = 100
+    tweet_lookback_hours: int = 24
+
+    # Performance Configuration
+    batch_size: int = 50
+    parallel_processing: bool = True
+
+    class Config:
+        env_prefix = "LANGCHAIN_"
+        case_sensitive = False
+
+def get_langchain_config() -> LangChainConfig:
+    """Get LangChain configuration."""
+    return LangChainConfig()
+```
+
+## 8. Testing Patterns
+
+### Unit Testing for LangChain Components
+```python
+import pytest
+from unittest.mock import Mock, patch
+from langchain_core.documents import Document
+
+class TestTwitterDataProcessor:
+    """Test cases for Twitter data processor."""
+
+    @pytest.fixture
+    def processor(self):
+        return TwitterDataProcessor(chunk_size=500, chunk_overlap=100)
+
+    @pytest.fixture
+    def sample_tweets(self):
+        return [
+            TwitterData(
+                tweet_id="123",
+                content="Test tweet content",
+                author="testuser",
+                timestamp=datetime.now(),
+                hashtags=["test", "example"],
+                mentions=["@user1"],
+                engagement_metrics={"likes": 10, "retweets": 5}
+            )
+        ]
+
+    def test_process_twitter_data(self, processor, sample_tweets):
+        """Test processing Twitter data into documents."""
+        documents = processor.process_twitter_data(sample_tweets)
+
+        assert len(documents) > 0
+        assert all(isinstance(doc, Document) for doc in documents)
+        assert all("tweet_id" in doc.metadata for doc in documents)
+
+    def test_format_tweet_content(self, processor, sample_tweets):
+        """Test tweet content formatting."""
+        tweet = sample_tweets[0]
+        content = processor._format_tweet_content(tweet)
+
+        assert "Test tweet content" in content
+        assert "testuser" in content
+        assert "test, example" in content
+
+class TestTwitterVectorStore:
+    """Test cases for Twitter vector store."""
+
+    @pytest.fixture
+    def vector_store(self, tmp_path):
+        return TwitterVectorStore(db_path=str(tmp_path))
+
+    def test_initialize_store(self, vector_store):
+        """Test vector store initialization."""
+        assert vector_store.vector_store is not None
+        assert vector_store.embeddings is not None
+
+    def test_add_documents(self, vector_store):
+        """Test adding documents to vector store."""
+        documents = [
+            Document(page_content="Test content", metadata={"test": "data"})
+        ]
+
+        doc_ids = vector_store.add_twitter_documents(documents)
+        assert len(doc_ids) == 1
+
+    def test_similarity_search(self, vector_store):
+        """Test similarity search functionality."""
+        # Add test documents first
+        documents = [
+            Document(page_content="Twitter data analysis", metadata={"topic": "analysis"}),
+            Document(page_content="Machine learning insights", metadata={"topic": "ml"})
+        ]
+        vector_store.add_twitter_documents(documents)
+
+        # Search for similar content
+        results = vector_store.similarity_search("data analysis", k=1)
+        assert len(results) > 0
+```
+
+This comprehensive set of rules provides:
+
+1. **Clean Architecture**: Proper separation of concerns with abstract base classes
+2. **Vector Store Integration**: ChromaDB integration following the image pattern
+3. **Agent Tools**: Custom tools for Twitter analysis and article improvement
+4. **Service Layer**: Integration with existing Darom architecture
+5. **Error Handling**: Comprehensive error handling and logging
+6. **Configuration**: Environment-based configuration management
+7. **Testing**: Unit testing patterns for all components
+8. **Documentation**: Clear docstrings and type hints throughout
+
+The rules ensure that the LangChain integration follows Python OO best practices while maintaining compatibility with your existing Darom project structure.
