@@ -196,3 +196,21 @@ Data Engineer specializing in automation solutions for pension fund administrati
 ---
 
 *Portfolio last updated: March 2026*
+
+## Mirror on GitHub
+
+This tree is also published as its own repository: [github.com/victorvos/cv-portfolio](https://github.com/victorvos/cv-portfolio).
+
+From the monorepo root (`Developer`), after committing changes under `CV/`:
+
+```bash
+git fetch cv-portfolio
+git subtree split --prefix=CV -b cv-portfolio-split
+git push cv-portfolio cv-portfolio-split:master --force-with-lease=cv-portfolio/master
+git branch -D cv-portfolio-split
+```
+
+The remote `cv-portfolio` must exist once:  
+`git remote add cv-portfolio https://github.com/victorvos/cv-portfolio.git`
+
+If the lease step rejects (e.g. you intend to replace whatever is on `master`), use `--force` instead of `--force-with-lease`.
