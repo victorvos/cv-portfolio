@@ -76,7 +76,7 @@ Full-stack news site with LangGraph-backed editorial workflows and usage-based b
 ---
 
 ### [Systemic Lag Trader — BTC Agent](projects/systemic-lag-trader.md)
-**[btc.daromvibenews.com](https://btc.daromvibenews.com)**
+**[btc.daromvibenews.com](https://btc.daromvibenews.com/dashboard)**
 
 Research-oriented trading automation: staged LLM pipeline (discovery → verification → edge estimate) with explicit risk limits and optional Polymarket integration (dry-run by default).
 
