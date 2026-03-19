@@ -20,32 +20,42 @@ Pipeline that looks for **systemic lag** between fast headlines (social / RSS) a
 
 ## Architecture (inverted pyramid)
 
+Same flow as the public [About](https://btc.daromvibenews.com/about) page (rendered from the app’s `/about` template).
+
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#f7931a', 'lineColor': '#808080', 'textColor': '#ffffff'}}}%%
-flowchart TB
-    subgraph Discovery
-        G[Grok + RSS feeds]
-        M[Signal memory JSONL]
+%%{init: {'theme': 'base', 'flowchart': {'nodeSpacing': 80, 'rankSpacing': 80, 'curve': 'basis'}, 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff', 'fontFamily': 'Segoe UI, sans-serif'}}}%%
+flowchart TD
+    subgraph Discovery ["1. DISCOVERY (High Throughput)"]
+        SM[Signal Memory] -- "Pending headlines" --> S[Signal Pool]
+        G[xAI Grok] -- "Twitter Firehose" --> S
+        R[RSS Feeds] -- "Institutional News" --> S
+        S -- "Save new" --> SM
     end
-    subgraph Filter
-        P[Perplexity verification]
+
+    subgraph Verification ["2. VERIFICATION (Truth Filtering)"]
+        S -- "Headline" --> P[Perplexity AI]
+        P -- "Search Web" --> V{Is Verified?}
     end
-    subgraph Edge
-        GM[Gemini + price context]
-        R[Regime: Bull / Bear / Sideways]
+
+    subgraph Analysis ["3. EDGE ANALYSIS (Alpha Estimation)"]
+        V -- "Yes" --> GM[Google Gemini]
+        C[CoinGecko] -- "Live Prices" --> GM
+        GM -- "Compare News vs Price" --> E[Edge Score]
     end
-    subgraph Action
-        B[Contextual bandit]
-        PF[Portfolio / risk limits]
-        PM[Polymarket gateway]
+
+    subgraph Execution ["4. ACTION (Risk-Managed)"]
+        E -- "> Threshold" --> B[Portfolio Expert]
+        B -- "Check Balance" --> BT[Bandit Tuner]
+        BT -- "Select Arm" --> PM[Polymarket]
+        PM -- "Outcome" --> BK[Backfill Service]
+        BK -- "Realized PnL" --> BT
     end
-    G --> M
-    M --> P
-    P --> GM
-    GM --> R
-    R --> B
-    B --> PF
-    PF --> PM
+
+    style Discovery fill:#1e1e1e,stroke:#4d90fe,stroke-width:2px
+    style Verification fill:#1e1e1e,stroke:#4d90fe,stroke-width:2px
+    style Analysis fill:#1e1e1e,stroke:#4d90fe,stroke-width:2px
+    style Execution fill:#1e1e1e,stroke:#4d90fe,stroke-width:2px
+    style PM fill:#4d90fe,stroke:#ffffff,stroke-width:2px,color:#000
 ```
 
 ## Key features
