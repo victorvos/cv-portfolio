@@ -1,38 +1,22 @@
 # Media Automation Suite
 
-Docker-based automation tools for managing media file transfers and organization on NAS systems.
+Docker-packaged Python tools for server-to-NAS media transfers and semi-automated file organization.
 
-## Table of Contents
-- [Overview](#overview)
-- [Technical Stack](#technical-stack)
-- [Architecture](#architecture)
-- [Key Features](#key-features)
-- [Skills Demonstrated](#skills-demonstrated)
-
-## Overview
-
-A collection of two Python applications designed to automate media file management workflows. The suite handles file transfers between servers with progress tracking, and intelligent file organization with ML-powered classification.
-
----
-
-## 📋 Technical Stack
+## Technical stack
 
 | Category | Technologies |
 |----------|-------------|
 | **Language** | Python 3.10+ |
-| **Containerization** | Docker, Docker Compose |
-| **File Transfer** | rclone, SFTP |
-| **API Integration** | qBittorrent WebAPI |
-| **ML/Classification** | Scikit-learn patterns, Custom ML classifier |
-| **CLI Interface** | Rich Console, ASCII progress bars |
-| **Testing** | pytest, Integration tests |
-| **Logging** | Structured logging, JSON output |
+| **Containers** | Docker, Docker Compose |
+| **Transfer** | rclone, SFTP |
+| **APIs** | qBittorrent Web API |
+| **Classification** | Lightweight ML / heuristics on filenames and metadata |
+| **CLI** | Rich, structured logging |
+| **Testing** | pytest (unit and integration-style) |
 
----
+## Architecture
 
-## 🔧 Architecture
-
-### SeedManager - File Transfer Automation
+### SeedManager — transfers
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff'}}}%%
@@ -63,7 +47,7 @@ graph TB
     style H fill:#fff8e1,stroke:#e65100,stroke-width:2px,color:#000000
 ```
 
-### File Manager - ML-Powered Organization
+### File Manager — organization
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff'}}}%%
@@ -92,72 +76,22 @@ graph TB
     style H fill:#4caf50,stroke:#2e7d32,stroke-width:2px,color:#000000
 ```
 
----
-
-## Key Features
+## Key features
 
 ### SeedManager
-
-**File Transfer System:**
-- Automated file transfers with rclone integration
-- Real-time progress display with ASCII art progress bars
-- File integrity verification with size checking
-- Stall detection and automatic retry logic
-- Dynamic path mapping between systems
-- Configurable criteria for transfer eligibility
-
-**qBittorrent Integration:**
-- Full WebAPI integration with authentication
-- State analysis and eligibility checking
-- Automatic cleanup after successful transfers
+- rclone-driven copies with progress and integrity checks
+- Stall detection and retries on long transfers
+- qBittorrent Web API integration for eligibility and cleanup
 
 ### File Manager
+- Filename parsing and confidence-scored suggestions
+- User feedback loop to improve suggestions over time
+- Dry-run and bulk operations in the terminal
+- Layout conventions compatible with common media servers (e.g. Plex)
 
-**Smart Classification:**
-- Advanced regex-based filename parsing
-- ML-powered auto-approval based on confidence scoring
-- Learns from user decisions to improve accuracy
-- Quality indicator recognition for trusted sources
+## Skills demonstrated
 
-**Interactive Interface:**
-- Rich terminal UI with bulk operations
-- Dry-run mode for safe previewing
-- Category-based review workflow
-- Smart recommendations with explanations
-
-**Media Organization:**
-- Plex-compatible directory structure
-- Automatic subtitle file handling
-- Support for movies, TV shows, and music
-
----
-
-## Skills Demonstrated
-
-**Software Architecture:**
-- Clean service-oriented architecture
-- Strategy pattern for transfer operations
-- Observer pattern for progress tracking
-- Data classes for transfer requests/results
-
-**DevOps & Automation:**
-- Docker containerization with Docker Compose
-- Scheduled task automation (NAS Task Scheduler)
-- Environment-based configuration
-- Comprehensive logging systems
-
-**API Integration:**
-- qBittorrent WebAPI client implementation
-- rclone command integration
-- JSON-based configuration management
-
-**Machine Learning:**
-- Custom classifier with confidence scoring
-- User feedback loop for continuous learning
-- Feature extraction from filenames
-- Pattern recognition for quality indicators
-
-**Testing & Quality:**
-- Integration tests with real connections
-- Unit tests with mocked dependencies
-- Test runner automation
+- **Reliability:** Long-running jobs with observable progress and failure handling
+- **Integration:** Wrapping CLI tools and HTTP APIs behind small service layers
+- **Packaging:** Repeatable Docker images for home-lab style deployments
+- **Testing:** Mix of mocked unit tests and integration-style checks

@@ -1,6 +1,6 @@
 # Snowflake Package Sync Pipeline
 
-Enterprise CI/CD pipeline for synchronizing Python packages to Snowflake internal stages.
+Internal-style CI/CD flow for packaging Python dependencies and publishing them to Snowflake stages for UDFs and notebooks.
 
 ## Technical Stack
 
@@ -47,24 +47,24 @@ graph LR
 
 ## Key Features
 
-### Automated Package Management
-- Downloads packages from corporate ProGet or public PyPI
-- Creates Snowflake-compatible ZIP archives
-- Handles dependency resolution
+### Package flow
+- Download from corporate ProGet and/or public PyPI as configured
+- Produce Snowflake-compatible ZIP bundles for internal stages
+- Resolve or pin dependencies according to pipeline rules
 
-### Azure DevOps Integration
-- Fully automated pipeline triggers
-- Environment-specific configurations
-- Secure credential management via Azure Key Vault
+### Azure DevOps integration
+- Pipeline-triggered builds and uploads
+- Environment-specific variables for Snowflake and registry access
+- Credentials supplied via pipeline secrets / variables (not committed to the repo)
 
-### Testing Strategy
-- Unit tests with mocked external dependencies
-- Integration tests against Snowflake staging
-- CI validation on pull requests
+### Testing
+- Unit tests with mocked external I/O
+- Targeted checks against Snowflake staging where available
+- CI runs on pull requests
 
-## Skills Demonstrated
+## Skills demonstrated
 
-- **Data Engineering:** Snowflake administration and Python UDF deployment
-- **CI/CD:** Azure DevOps pipeline design and automation
-- **Python Packaging:** Understanding of wheel formats and dependencies
-- **Enterprise Integration:** Working with corporate package registries
+- **Data platforms:** Snowflake stages and Python artifact layout for in-warehouse use
+- **CI/CD:** Azure Pipelines wiring for repeatable uploads
+- **Packaging:** Wheels, ZIP layouts, and dependency constraints in a regulated context
+- **Registries:** Consumption from private (ProGet) and public indexes

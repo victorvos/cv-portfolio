@@ -1,6 +1,6 @@
 # Victor Vos - Data Engineering & AI Portfolio
 
-Data Engineer with Computer Science BSc, specializing in building data pipelines, AI-powered applications, and full-stack web development. Proven experience architecting production systems that combine modern LLM technologies with robust backend infrastructure.
+Data Engineer with a Computer Science BSc, focused on data pipelines, AI-assisted applications, and backend-heavy web systems. Comfortable shipping containerized services that combine LLMs with conventional data stores and APIs.
 
 ## Table of Contents
 - [Core Competencies](#core-competencies)
@@ -16,7 +16,7 @@ Data Engineer with Computer Science BSc, specializing in building data pipelines
 - Cloud data warehouse integration (Snowflake, Firebase)
 - Data modeling and schema design
 - Real-time data processing with WebSockets
-- Vector database implementation for semantic search
+- Embedding-backed semantic search where appropriate
 
 ### AI & Machine Learning Integration
 - LLM orchestration with LangGraph and LangChain
@@ -43,11 +43,11 @@ Data Engineer with Computer Science BSc, specializing in building data pipelines
 - Tests serve as guardrails for AI-generated code validation
 - Rapid iteration cycles with automated regression detection
 
-## 📊 Technical Skills
+## Technical Skills
 
 | Category | Technologies |
 |----------|-------------|
-| **Languages** | Python, JavaScript, TypeScript, SQL |
+| **Programming** | Python, JavaScript, TypeScript, SQL |
 | **Backend Frameworks** | FastAPI, Flask, Express.js |
 | **Data Platforms** | Snowflake, Firebase Firestore, Firebase Realtime DB |
 | **AI/ML** | LangGraph, LangChain, OpenAI API, Google Gemini, Grok, Perplexity |
@@ -55,7 +55,7 @@ Data Engineer with Computer Science BSc, specializing in building data pipelines
 | **Web Scraping** | Crawl4AI, Playwright, BeautifulSoup |
 | **Frontend** | Jinja2, Leaflet.js, Socket.io, Tkinter |
 | **Testing** | pytest, Jest, unittest |
-| **Languages** | Dutch (Native), English (Fluent) |
+| **Spoken** | Dutch (native), English (fluent) |
 | **Legacy/Other** | Java, C#, .NET, Qlik Sense, Elastic Stack, SOAP, XML |
 
 ## Personal Projects
@@ -63,7 +63,7 @@ Data Engineer with Computer Science BSc, specializing in building data pipelines
 ### [Darom - AI-Powered News Platform](projects/darom.md)
 **Production app live at [daromvibenews.com](https://daromvibenews.com)**
 
-Full-stack AI content generation platform with LangGraph-powered agentic workflows.
+Full-stack news site with LangGraph-backed editorial workflows and usage-based billing.
 
 **Key Technologies:** FastAPI, Firebase, Gemini 3 Flash, Grok, Perplexity, LangGraph, WebSockets
 
@@ -71,20 +71,33 @@ Full-stack AI content generation platform with LangGraph-powered agentic workflo
 - Multi-agent article generation with automated fact-checking
 - Real-time WebSocket communication for live updates
 - Credit economy with reserve-and-refund billing system
-- 95% cost reduction through smart caching strategies
+- Lower auxiliary API spend through targeted caching (e.g. social insights)
+
+---
+
+### [Systemic Lag Trader — BTC Agent](projects/systemic-lag-trader.md)
+**[btc.daromvibenews.com](https://btc.daromvibenews.com)**
+
+Research-oriented trading automation: staged LLM pipeline (discovery → verification → edge estimate) with explicit risk limits and optional Polymarket integration (dry-run by default).
+
+**Key Technologies:** FastAPI, LangGraph, Grok, Perplexity, Google Gemini, CoinGecko, Polymarket, Firestore, WebSockets, Docker
+
+**Highlights:**
+- Multi-stage “inverted pyramid” pipeline with on-disk signal memory for delayed re-verification
+- Portfolio sizing, daily stop-loss context, volatility hibernate, and contextual bandit learning
+- Real-time dashboard with WebSocket updates; deployed on Hetzner behind Caddy
 
 ---
 
 ### [MapsAI - Real Estate Intelligence Platform](projects/mapsai.md)
 **[maps.daromvibenews.com](https://maps.daromvibenews.com)**
-**AI-powered property visualization and analysis system**
 
-Interactive mapping platform that scrapes, processes, and visualizes real estate data with AI-powered insights.
+Interactive map for Dutch property listings: scraping, structured extraction, and search over Firestore-backed data.
 
-**Key Technologies:** FastAPI, Firebase, Crawl4AI, OpenAI, Leaflet.js, Vector Embeddings
+**Key Technologies:** FastAPI, Firebase, Crawl4AI, OpenAI, LangChain / LangGraph, Leaflet.js, embeddings
 
 **Highlights:**
-- AI-powered web scraping with LLM data extraction
+- LLM-assisted extraction from listing pages
 - Interactive map with property clustering
 - Semantic search using vector embeddings
 - Real-time property updates via WebSockets
@@ -92,31 +105,30 @@ Interactive mapping platform that scrapes, processes, and visualizes real estate
 ---
 
 ### [Snowflake Package Sync Pipeline](projects/snowflake-pipeline.md)
-**Enterprise CI/CD pipeline for Snowflake deployments**
+**Python package sync to Snowflake stages**
 
-Automated tool for synchronizing Python packages from ProGet/PyPI to Snowflake internal stages.
+Tooling and pipelines to bundle dependencies and upload them to Snowflake for in-warehouse Python workloads.
 
-**Key Technologies:** Python, Snowflake, Azure DevOps, Azure Pipelines
+**Key technologies:** Python, Snowflake, Azure DevOps, Azure Pipelines
 
 **Highlights:**
-- Automated package versioning and deployment
-- Azure DevOps pipeline integration
-- Unit tested with mocked external dependencies
+- ProGet and/or PyPI sources as configured
+- Repeatable ZIP/stage uploads via pipeline
+- Tests with mocked external calls
 
 ---
 
 ### [Media Automation Suite](projects/media-automation.md)
-**Docker-based file transfer and organization tools**
+**Docker-based media transfer and organization**
 
-Suite of Python applications for automating media file management: server-to-NAS transfers with progress tracking, and ML-powered file organization.
+Python CLIs for seeding a NAS from remote sources and for semi-automated sorting of media files.
 
-**Key Technologies:** Python, Docker, rclone, qBittorrent API, ML Classification
+**Key technologies:** Python, Docker, rclone, qBittorrent Web API, lightweight classification
 
 **Highlights:**
-- Real-time transfer progress with stall detection and retry logic
-- ML-powered auto-classification learning from user decisions
-- Interactive CLI with rich terminal UI
-- Comprehensive test suite with integration tests
+- Transfer progress, integrity checks, stall detection, retries
+- User-in-the-loop suggestions that improve from feedback
+- Rich terminal UI; pytest coverage
 
 ## Work Experience
 
@@ -163,7 +175,7 @@ Data Engineer specializing in automation solutions for pension fund administrati
 
 **Technologies:** Python, SQL, Azure DevOps, CI/CD Pipelines, REST APIs, Database Development
 
-## 📚 Education
+## Education
 
 **Bachelor of Science in Computer Science**
 *HBO-ICT - Software & Information Engineering | Hogeschool Utrecht (2015 - 2019)*
@@ -183,4 +195,4 @@ Data Engineer specializing in automation solutions for pension fund administrati
 
 ---
 
-*Portfolio last updated: February 2026*
+*Portfolio last updated: March 2026*

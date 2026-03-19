@@ -2,13 +2,13 @@
 
 **Live Production:** [daromvibenews.com](https://daromvibenews.com)
 
-Full-stack AI content generation platform featuring multi-agent workflows, real-time updates, and a credit-based economy.
+Full-stack editorial platform: AI-assisted article workflows, real-time updates, and usage-based billing.
 
 ## Technical Stack
 
 | Component | Technology |
 |-----------|------------|
-| **Backend** | FastAPI, Python 3.11+, Pydantic |
+| **Backend** | FastAPI, Python 3.12+, Pydantic |
 | **AI/LLM** | Gemini 3 Flash, Grok, Perplexity, LangGraph |
 | **Database** | Firebase Firestore |
 | **Real-time** | WebSockets, Server-Sent Events |
@@ -59,27 +59,26 @@ graph TB
 
 ## Key Features
 
-### Multi-Agent Article Generation
-- LangGraph-powered agentic workflow for article creation
-- Automated fact-checking with AI verification
-- Multi-source research using Perplexity search
-- Stateful editor with checkpoint/resume capability
+### Article generation and editing
+- LangGraph-based workflows for drafting and revision
+- Post-generation verification against sources
+- Research augmented with Perplexity where configured
+- Stateful editor with checkpoint-style recovery
 
-### Credit Economy System
-- Reserve-and-refund billing model
-- Estimated cost calculation before generation
-- Automatic refund on partial completion
-- Token usage tracking across all AI providers
+### Usage and billing
+- Reserve-and-refund style handling for generations
+- Up-front estimates where applicable; partial refunds on incomplete runs
+- Token usage recorded across configured providers
 
-### Real-Time Communication
-- WebSocket-based live updates during generation
-- Server-Sent Events for progress streaming
-- Community presence indicators
+### Real-time UI
+- WebSockets for live updates during long operations
+- Server-Sent Events for progress where used
+- Lightweight presence indicators on public views
 
 ## Skills Demonstrated
 
-- **AI/ML Integration:** Orchestrating multiple LLM providers with fallback strategies
+- **AI integration:** Multiple LLM providers with pragmatic fallbacks for availability
 - **Async Programming:** Complex async workflows with proper error handling
 - **Clean Architecture:** SOLID principles with repository pattern
-- **Cost Optimization:** 95% reduction through smart caching and model selection
+- **Cost awareness:** Targeted caching and model selection to limit third-party API spend (e.g. social insights)
 - **Production Deployment:** Docker containerization with Caddy reverse proxy

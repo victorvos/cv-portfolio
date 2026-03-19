@@ -1,19 +1,19 @@
 # MapsAI - Real Estate Intelligence Platform
 
-**Live Demo:** [maps.daromvibenews.com](https://maps.daromvibenews.com)
+**Live:** [maps.daromvibenews.com](https://maps.daromvibenews.com)
 
-AI-powered property visualization and analysis system with intelligent web scraping.
+Web application for Dutch property listings: ingestion, structured storage, map UI, and semantic search.
 
 ## Technical Stack
 
 | Component | Technology |
 |-----------|------------|
-| **Backend** | FastAPI, Python 3.11+, Pydantic |
-| **AI/ML** | OpenAI GPT, Crawl4AI, LangChain |
+| **Backend** | FastAPI, Python 3.12+, Pydantic |
+| **AI / automation** | OpenAI APIs, Crawl4AI, LangChain, LangGraph |
 | **Database** | Firebase Firestore, Vector Embeddings |
 | **Scraping** | Crawl4AI, Playwright, BeautifulSoup |
 | **Frontend** | Jinja2, Leaflet.js, JavaScript |
-| **Deployment** | Docker, Hetzner VPS |
+| **Deployment** | Docker, Hetzner VPS, Caddy |
 
 ## Architecture
 
@@ -57,33 +57,24 @@ graph TB
     style H fill:#fff8e1,stroke:#e65100,stroke-width:2px,color:#000000
 ```
 
-## Key Features
+## Key features
 
-### AI-Powered Web Scraping
-- LLM-based data extraction from unstructured HTML
-- Automatic schema inference for property data
-- Captcha detection and human-intervention workflow
-- Cookie persistence for session management
+### Ingestion and extraction
+- Crawl4AI / Playwright-backed scraping of listing sites
+- LLM-assisted parsing of unstructured HTML into structured fields
+- Session handling and basic guardrails for unstable pages
 
-### Interactive Mapping
-- Leaflet.js integration with property clustering
-- Real-time filter updates
-- Property detail overlays with AI insights
+### Map and UX
+- Leaflet map with clustering and filters
+- Viewport-oriented loading to limit payload size
 
-### Vector Search
-- OpenAI embeddings for property descriptions
-- Semantic similarity search
-- "Find similar properties" functionality
+### Search and quality
+- Embeddings for similarity-style queries where enabled
+- Health checks and flags for stale or incomplete records
 
-### Data Quality Management
-- Automated health checks for property data
-- Zombie property detection
-- Incomplete data flagging
+## Skills demonstrated
 
-## Skills Demonstrated
-
-- **Web Scraping:** Advanced techniques with bot detection evasion
-- **Vector Databases:** Semantic search implementation
-- **Clean Architecture:** Interface-based dependency injection
-- **Data Quality:** Automated validation and monitoring
-- **Frontend Integration:** Interactive mapping with real-time updates
+- **Data ingestion:** Browser automation and resilient scraping patterns
+- **Search:** Embedding-backed similarity over property text
+- **Architecture:** Layered FastAPI services with injectable dependencies
+- **Operations:** Containerized deployment behind a reverse proxy
