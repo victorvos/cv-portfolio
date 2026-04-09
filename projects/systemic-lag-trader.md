@@ -4,19 +4,20 @@
 
 *Experimental system—not financial advice; intended for research and controlled environments.*
 
-Pipeline that looks for **systemic lag** between fast headlines (social / RSS) and slower wire-style confirmation: staged LLM passes reduce noise, estimate short-horizon edge using live crypto context, then apply risk rules before any optional execution (Polymarket path; dry-run by default).
+Pipeline that looks for **systemic lag** between fast headlines (social / RSS) and slower wire-style confirmation: staged LLM passes reduce noise, estimate short-horizon edge using live market context, then apply risk rules before **paper-simulated** or optional live execution (**Kalshi**-first venue in production; Polymarket path retained; dry-run by default).
 
 ## Technical Stack
 
 | Component | Technology |
 |-----------|------------|
 | **Backend** | FastAPI, Python 3.12+, Pydantic Settings |
-| **Orchestration** | LangGraph (`StateGraph`), scheduled multi-agent cycles |
+| **Orchestration** | LangGraph (`StateGraph`), scheduled multi-agent cycles, async price + matching loop |
 | **AI / LLM** | xAI Grok (discovery), Perplexity (verification), Google Gemini (edge / regime) |
-| **Market data** | CoinGecko (BTC/ETH/SOL context), Polymarket CLOB/Gamma |
-| **Persistence** | Firebase Firestore (production audits), JSONL signal memory & trade logs |
-| **Frontend** | Dashboard UI with WebSocket live updates |
-| **Deployment** | Docker on VPS; TLS and routing via Caddy |
+| **Market data** | CoinGecko (BTC/ETH/SOL), Kalshi public market API (binary YES mids), Polymarket CLOB/Gamma (alternate path) |
+| **Matching / RAG** | Optional Supabase **pgvector** embeddings for Kalshi ticker search |
+| **Persistence** | Firebase Firestore (audits), JSONL signal memory & local trade logs, file-backed paper portfolio |
+| **Frontend** | Operator dashboard (Jinja2) with WebSocket live prices and **runtime config snapshot** |
+| **Deployment** | Docker on VPS; rsync deploy script; TLS via Caddy |
 
 ## Architecture (inverted pyramid)
 
@@ -46,8 +47,8 @@ flowchart TD
     subgraph Execution ["4. ACTION (Risk-Managed)"]
         E -- "> Threshold" --> B[Portfolio Expert]
         B -- "Check Balance" --> BT[Bandit Tuner]
-        BT -- "Select Arm" --> PM[Polymarket]
-        PM -- "Outcome" --> BK[Backfill Service]
+        BT -- "Select Arm" --> VN[Kalshi / Polymarket]
+        VN -- "Outcome" --> BK[Backfill Service]
         BK -- "Realized PnL" --> BT
     end
 
@@ -55,27 +56,37 @@ flowchart TD
     style Verification fill:#1e1e1e,stroke:#4d90fe,stroke-width:2px
     style Analysis fill:#1e1e1e,stroke:#4d90fe,stroke-width:2px
     style Execution fill:#1e1e1e,stroke:#4d90fe,stroke-width:2px
-    style PM fill:#4d90fe,stroke:#ffffff,stroke-width:2px,color:#000
+    style VN fill:#4d90fe,stroke:#ffffff,stroke-width:2px,color:#000
 ```
 
 ## Key features
 
 ### Pipeline
-- Discovery via Grok and RSS; short retention of pending headlines for later re-checks.
-- Verification pass (e.g. Perplexity) against secondary sources.
-- Edge estimation with Gemini using BTC/ETH/SOL context from CoinGecko.
+- Discovery via Grok and RSS (configurable **scope**: BTC-narrow vs **broad** macro/news); signal memory for delayed re-verification.
+- Verification (Perplexity) with configurable **top-N** headlines per cycle.
+- Edge estimation with Gemini; live **BTC** and venue **YES** context for binary legs.
 
-### Risk and feedback
-- Position sizing caps, daily loss context, and explicit exit / panic rules.
-- Optional hibernation when markets are quiet to limit API use.
-- Outcome backfill to tune a contextual bandit and regret-style cutoffs.
+### Risk, modes, and decisions
+- **`normal` / `riskier` trading mode** (env-driven): wider discovery defaults and relaxed edge gates while **hard safety** remains (e.g. no token entry without valid YES mid, concrete `market_id`).
+- Portfolio caps, daily loss / circuit-breaker context, cooldowns, and optional **volatility-based** cycle spacing.
+- Optional **contextual bandit**; explicit skip reasons in structured cycle logs.
+- Optional **fast path**: extra full cycle when spot BTC moves sharply between frequent price ticks (cooldown-guarded).
+
+### Market integration
+- **Kalshi** as primary paper venue: public `GET /markets/{ticker}` for implied YES probability; parsing handles **finalized** books vs active **bid/ask** microprice.
+- Paper portfolio: queued limits, multi-market matching, optional **pgvector**-assisted ticker retrieval.
 
 ### Operations
-- Scheduled cycles plus manual `POST /run-once`; dashboard with WebSocket metrics for monitoring.
+- **Dual cadence:** long AI cycle (configurable minutes) plus short **price + matching** loop.
+- Dashboard: WebSocket prices, PnL / activity views, **live env snapshot** (`interval`, scope, gates) to reduce deploy drift.
+- Deploy: **Docker** + scripted **rsync**; post-deploy HTTP smoke checks.
+
+### Quality
+- **pytest** coverage on decision logic, dashboard API, Kalshi parsing, and infrastructure paths.
 
 ## Skills demonstrated
 
-- **Orchestration:** LangGraph graphs that merge persisted signals with fresh feeds.
-- **LLM boundaries:** Separate stages for breadth vs. verification vs. decision support.
-- **Observability:** Structured logs, optional Firestore audit trail, containerized deployment.
-- **Decision hygiene:** Bandit-style exploration with explicit risk and regime hooks—not always-on trading.
+- **Orchestration:** LangGraph plus real-world scheduling (intervals, debouncing, cost awareness).
+- **LLM boundaries:** Discovery vs verification vs scoring vs pure **Python** decision gates.
+- **Observability:** Structured logs, Firestore + local audits, operator-facing dashboard contract.
+- **Reliability:** Defensive price parsing, explicit skip reasons, tests as regression guardrails—not “LLM says trade.”

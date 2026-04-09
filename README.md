@@ -78,14 +78,15 @@ Full-stack news site with LangGraph-backed editorial workflows and usage-based b
 ### [Systemic Lag Trader — BTC Agent](projects/systemic-lag-trader.md)
 **[btc.daromvibenews.com](https://btc.daromvibenews.com/dashboard)**
 
-Research-oriented trading automation: staged LLM pipeline (discovery → verification → edge estimate) with explicit risk limits and optional Polymarket integration (dry-run by default).
+Research-oriented trading automation: staged LLM pipeline (discovery → verification → edge estimate) with explicit **Python decision gates**, **Kalshi-first** paper execution, optional Polymarket path, and env-driven **normal / riskier** modes (dry-run by default).
 
-**Key Technologies:** FastAPI, LangGraph, Grok, Perplexity, Google Gemini, CoinGecko, Polymarket, Firestore, WebSockets, Docker
+**Key Technologies:** FastAPI, LangGraph, Grok, Perplexity, Google Gemini, CoinGecko, Kalshi, Polymarket, Firestore, WebSockets, Docker, optional Supabase pgvector
 
 **Highlights:**
-- Multi-stage “inverted pyramid” pipeline with on-disk signal memory for delayed re-verification
-- Portfolio sizing, daily stop-loss context, volatility hibernate, and contextual bandit learning
-- Real-time dashboard with WebSocket updates; deployed on Hetzner behind Caddy
+- Multi-stage pipeline with signal memory, configurable discovery scope, and structured skip / order logging
+- Dual scheduler: configurable AI cycle plus frequent price + paper **limit matching**; optional **BTC spike** trigger for extra cycles
+- Decision hygiene: valid YES-mid and **market_id** checks, bid/ask-aware Kalshi parsing (no finalized-book false mids)
+- Operator dashboard with WebSocket updates and **live runtime config** snapshot; Hetzner + Caddy + scripted deploy
 
 ---
 
@@ -195,7 +196,7 @@ Data Engineer specializing in automation solutions for pension fund administrati
 
 ---
 
-*Portfolio last updated: March 2026*
+*Portfolio last updated: April 2026*
 
 ## Mirror on GitHub
 
