@@ -79,15 +79,15 @@ Full-stack news site with LangGraph-backed editorial workflows and usage-based b
 ### [Systemic Lag Trader — BTC Agent](projects/systemic-lag-trader.md)
 **[btc.daromvibenews.com](https://btc.daromvibenews.com/dashboard)**
 
-Research-oriented trading automation: staged LLM pipeline (discovery → verification → edge estimate) with explicit **Python decision gates**, **Kalshi-first** paper execution, optional Polymarket path, and env-driven **normal / riskier** modes (dry-run by default).
+Research-oriented trading automation: staged LLM pipeline (RSS/Grok discovery → Perplexity verify → venue routing → Gemini edge) with explicit **Python decision gates**, **Polymarket-first** paper execution on real Gamma/CLOB mids, optional Kalshi / Bitvavo paths, and dry-run by default until paper expectancy is green.
 
-**Key Technologies:** FastAPI, LangGraph, Grok, Perplexity, Google Gemini, CoinGecko, Kalshi, Polymarket, Firestore, WebSockets, Docker, optional Supabase pgvector
+**Key Technologies:** FastAPI, LangGraph, Grok, Perplexity, Google Gemini, CoinGecko, Polymarket, Kalshi, Bitvavo, Firestore, Postgres (news intelligence), WebSockets, Docker, optional Supabase pgvector
 
 **Highlights:**
-- Multi-stage pipeline with signal memory, configurable discovery scope, and structured skip / order logging
-- Dual scheduler: configurable AI cycle plus frequent price + paper **limit matching**; optional **BTC spike** trigger for extra cycles
-- Decision hygiene: valid YES-mid and **market_id** checks, bid/ask-aware Kalshi parsing (no finalized-book false mids)
-- Operator dashboard with WebSocket updates and **live runtime config** snapshot; Hetzner + Caddy + scripted deploy
+- Multi-stage pipeline with signal memory, RSS novelty triggers, batched verification, and structured skip / order logging
+- Polymarket unified paper path (ATM / causal / regime gates); concurrent multi-market legs with per-market caps; API vs worker split
+- Dual scheduler: AI cycles plus frequent price + paper **limit matching**; paper ledger economics as settlement truth
+- Operator dashboard with WebSocket updates, order insights / alignment, and **live runtime config**; Hetzner + Caddy + scripted deploy
 
 ---
 
@@ -197,7 +197,7 @@ Data Engineer specializing in automation solutions for pension fund administrati
 
 ---
 
-*Portfolio last updated: April 2026*
+*Portfolio last updated: July 2026*
 
 ## Mirror on GitHub
 
