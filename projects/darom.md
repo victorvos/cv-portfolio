@@ -9,10 +9,11 @@ Full-stack editorial platform: AI-assisted article workflows, real-time updates,
 | Component | Technology |
 |-----------|------------|
 | **Backend** | FastAPI, Python 3.12+, Pydantic |
-| **AI/LLM** | Gemini 3 Flash, Grok, Perplexity, LangGraph |
+| **AI/LLM** | Gemini (Flash / Flash-Lite), Grok, Perplexity Sonar, LangGraph |
 | **Database** | Firebase Firestore |
 | **Real-time** | WebSockets, Server-Sent Events |
 | **Frontend** | Jinja2, JavaScript ES6 Modules |
+| **Monetization** | Stripe credits, Google AdSense (`ads.txt`) |
 | **Deployment** | Docker, Hetzner VPS, Caddy |
 
 ## Architecture
@@ -32,7 +33,7 @@ graph TB
     end
     
     subgraph "AI Models"
-        F[Gemini 3 Flash]
+        F[Gemini]
         G[Grok xAI]
         H[Perplexity]
     end
@@ -60,19 +61,23 @@ graph TB
 ## Key Features
 
 ### Article generation and editing
-- LangGraph-based workflows for drafting and revision
-- Post-generation verification against sources
-- Research augmented with Perplexity where configured
-- Stateful editor with checkpoint-style recovery
+- Create flow with Manual writing plus AI modes (standard generate and breaking news)
+- LangGraph-based drafting, revision, and deep-research tool loops
+- VS Code–style WYSIWYG editor with chat, inline instructions, and word-level diffs
+- Post-generation verification against sources with citation cleanup for reader-facing HTML
+- Research augmented with Perplexity / Grok where configured
+- Stateful editor with checkpoint-style recovery and version history
 
 ### Usage and billing
-- Reserve-and-refund style handling for generations
+- Reserve-and-refund style handling for generations and editor chat
 - Up-front estimates where applicable; partial refunds on incomplete runs
 - Token usage recorded across configured providers
+- AdSense integration with crawl-friendly `ads.txt` / `robots.txt`
 
-### Real-time UI
-- WebSockets for live updates during long operations
-- Server-Sent Events for progress where used
+### Real-time and reading UX
+- WebSockets for live updates during long operations, with deploy-resilient reconnect
+- Server-Sent Events for generation progress where used
+- Mobile-first article reading: hide-on-scroll chrome, stacked data tables, responsive create/editor UI
 - Lightweight presence indicators on public views
 
 ## Skills Demonstrated
@@ -80,5 +85,6 @@ graph TB
 - **AI integration:** Multiple LLM providers with pragmatic fallbacks for availability
 - **Async Programming:** Complex async workflows with proper error handling
 - **Clean Architecture:** SOLID principles with repository pattern
+- **Product UX:** Editor and mobile reading surfaces designed for real editorial use
 - **Cost awareness:** Targeted caching and model selection to limit third-party API spend (e.g. social insights)
 - **Production Deployment:** Docker containerization with Caddy reverse proxy

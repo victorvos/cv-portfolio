@@ -65,12 +65,13 @@ Data Engineer with a Computer Science BSc, focused on data pipelines, AI-assiste
 
 Full-stack news site with LangGraph-backed editorial workflows and usage-based billing.
 
-**Key Technologies:** FastAPI, Firebase, Gemini 3 Flash, Grok, Perplexity, LangGraph, WebSockets
+**Key Technologies:** FastAPI, Firebase, Gemini, Grok, Perplexity, LangGraph, WebSockets
 
 **Highlights:**
-- Multi-agent article generation with automated fact-checking
-- Real-time WebSocket communication for live updates
-- Credit economy with reserve-and-refund billing system
+- Multi-agent article generation with automated fact-checking and deep research
+- VS Code–style AI editor (chat, inline instructions, diffs) plus Manual / AI / Breaking create modes
+- Real-time WebSockets with deploy-resilient reconnect; mobile reading and table UX
+- Credit economy with reserve-and-refund billing; AdSense crawl surfaces (`ads.txt`)
 - Lower auxiliary API spend through targeted caching (e.g. social insights)
 
 ---
