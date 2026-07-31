@@ -63,16 +63,16 @@ Data Engineer with a Computer Science BSc, focused on data pipelines, AI-assiste
 ### [Darom - AI-Powered News Platform](projects/darom.md)
 **Production app live at [daromvibenews.com](https://daromvibenews.com)**
 
-Full-stack news site with LangGraph-backed editorial workflows and usage-based billing.
+Live AI news site I built and operate: write by hand or generate with AI, edit with an assistant, pay with credits, and run ads.
 
 **Key Technologies:** FastAPI, Firebase, Gemini, Grok, Perplexity, LangGraph, WebSockets
 
 **Highlights:**
-- Multi-agent article generation with automated fact-checking and deep research
-- VS Code–style AI editor (chat, inline instructions, diffs) plus Manual / AI / Breaking create modes
-- Real-time WebSockets with deploy-resilient reconnect; mobile reading and table UX
-- Credit economy with reserve-and-refund billing; AdSense crawl surfaces (`ads.txt`)
-- Lower auxiliary API spend through targeted caching (e.g. social insights)
+- AI article generation with web research and automated fact-checking
+- Full AI writing editor (chat, mark text to change, review before publish)
+- Live updates while jobs run; works well on mobile
+- Credit billing with refunds for unused usage; Google AdSense set up
+- Cost-saving caching for social/news helpers
 
 ---
 

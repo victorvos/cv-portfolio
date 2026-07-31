@@ -2,19 +2,19 @@
 
 **Live Production:** [daromvibenews.com](https://daromvibenews.com)
 
-Full-stack editorial platform: AI-assisted article workflows, real-time updates, and usage-based billing.
+A live news website I built and run end to end: users can write articles by hand or generate them with AI, edit with an AI assistant, and pay with a credit system. The site is online, mobile-friendly, and set up for ads.
 
 ## Technical Stack
 
-| Component | Technology |
-|-----------|------------|
+| Area | Tools |
+|------|-------|
 | **Backend** | FastAPI, Python 3.12+, Pydantic |
-| **AI/LLM** | Gemini (Flash / Flash-Lite), Grok, Perplexity Sonar, LangGraph |
+| **AI** | Google Gemini, xAI Grok, Perplexity, LangGraph |
 | **Database** | Firebase Firestore |
-| **Real-time** | WebSockets, Server-Sent Events |
-| **Frontend** | Jinja2, JavaScript ES6 Modules |
-| **Monetization** | Stripe credits, Google AdSense (`ads.txt`) |
-| **Deployment** | Docker, Hetzner VPS, Caddy |
+| **Live updates** | WebSockets, Server-Sent Events |
+| **Frontend** | Jinja2 templates, modern JavaScript |
+| **Payments & ads** | Stripe credits, Google AdSense |
+| **Hosting** | Docker on a Hetzner VPS, Caddy |
 
 ## Architecture
 
@@ -22,25 +22,25 @@ Full-stack editorial platform: AI-assisted article workflows, real-time updates,
 %%{init: {'theme': 'base', 'themeVariables': {'darkMode': true, 'background': '#121212', 'primaryColor': '#1e1e1e', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#4d90fe', 'secondaryColor': '#252526', 'tertiaryColor': '#2d2d30', 'lineColor': '#808080', 'textColor': '#ffffff', 'clusterBkg': '#1e1e1e', 'clusterBorder': '#4d90fe', 'nodeTextColor': '#ffffff'}}}%%
 graph TB
     subgraph "Frontend"
-        A[Jinja2 Templates]
-        B[WebSocket Client]
+        A[Web pages]
+        B[Live connection]
     end
     
     subgraph "Backend"
-        C[FastAPI Routes]
-        D[LangGraph Orchestrator]
-        E[AI Service Layer]
+        C[API]
+        D[AI workflow]
+        E[AI services]
     end
     
     subgraph "AI Models"
         F[Gemini]
-        G[Grok xAI]
+        G[Grok]
         H[Perplexity]
     end
     
     subgraph "Data"
-        I[Firebase Firestore]
-        J[Credit System]
+        I[Database]
+        J[Credits]
     end
     
     A --> C
@@ -60,31 +60,28 @@ graph TB
 
 ## Key Features
 
-### Article generation and editing
-- Create flow with Manual writing plus AI modes (standard generate and breaking news)
-- LangGraph-based drafting, revision, and deep-research tool loops
-- VS Code–style WYSIWYG editor with chat, inline instructions, and word-level diffs
-- Post-generation verification against sources with citation cleanup for reader-facing HTML
-- Research augmented with Perplexity / Grok where configured
-- Stateful editor with checkpoint-style recovery and version history
+### Writing and editing articles
+- Users can write manually or ask AI to draft a normal article or a breaking-news piece
+- AI can research the web, draft the story, and check facts against sources
+- Built-in editor with chat: rewrite sections, mark text with instructions, and review changes before accepting them
+- Version history so earlier drafts can be restored
+- Clean article pages on phone and desktop (including readable tables)
 
-### Usage and billing
-- Reserve-and-refund style handling for generations and editor chat
-- Up-front estimates where applicable; partial refunds on incomplete runs
-- Token usage recorded across configured providers
-- AdSense integration with crawl-friendly `ads.txt` / `robots.txt`
+### Credits and monetization
+- Credit system: cost is estimated up front; unused credits are refunded when a job finishes early
+- Usage is tracked across the AI providers in use
+- Google AdSense is wired in (including the required ads.txt file)
 
-### Real-time and reading UX
-- WebSockets for live updates during long operations, with deploy-resilient reconnect
-- Server-Sent Events for generation progress where used
-- Mobile-first article reading: hide-on-scroll chrome, stacked data tables, responsive create/editor UI
-- Lightweight presence indicators on public views
+### Live product experience
+- Pages update live while long AI jobs run
+- Connections recover cleanly after a deploy or short outage
+- Mobile reading hides the header while scrolling so the article stays easy to read
 
 ## Skills Demonstrated
 
-- **AI integration:** Multiple LLM providers with pragmatic fallbacks for availability
-- **Async Programming:** Complex async workflows with proper error handling
-- **Clean Architecture:** SOLID principles with repository pattern
-- **Product UX:** Editor and mobile reading surfaces designed for real editorial use
-- **Cost awareness:** Targeted caching and model selection to limit third-party API spend (e.g. social insights)
-- **Production Deployment:** Docker containerization with Caddy reverse proxy
+- **Building with AI:** Combining several AI providers in one product, with backups when one fails
+- **Reliable backend work:** Async Python services with clear error handling
+- **Clean code structure:** Separated business logic, data access, and UI layers
+- **Product thinking:** Editor and mobile reading designed for real daily use
+- **Cost control:** Caching and model choice to keep API spend down
+- **Shipping to production:** Docker deploy, reverse proxy, and a public live site
