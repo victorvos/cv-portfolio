@@ -76,18 +76,18 @@ Live AI news site I built and operate: write by hand or generate with AI, edit w
 
 ---
 
-### [Systemic Lag Trader — BTC Agent](projects/systemic-lag-trader.md)
+### [Systemic Lag Trader — AI Bitcoin trading research bot](projects/systemic-lag-trader.md)
 **[btc.daromvibenews.com](https://btc.daromvibenews.com/dashboard)**
 
-Research-oriented trading automation: staged LLM pipeline (RSS/Grok discovery → Perplexity verify → venue routing → Gemini edge) with explicit **Python decision gates**, **Polymarket-first** paper execution on real Gamma/CLOB mids, optional Kalshi / Bitvavo paths, and dry-run by default until paper expectancy is green.
+Automated research bot that watches Bitcoin news, fact-checks stories, matches them to prediction-market contracts, and places **paper** trades only when Python risk rules pass. Live money stays off until paper results look consistently good.
 
-**Key Technologies:** FastAPI, LangGraph, Grok, Perplexity, Google Gemini, CoinGecko, Polymarket, Kalshi, Bitvavo, Firestore, Postgres (news intelligence), WebSockets, Docker, optional Supabase pgvector
+**Key Technologies:** FastAPI, LangGraph, Grok, Perplexity, Google Gemini, CoinGecko, Polymarket, Kalshi, Bitvavo, Firebase, Postgres, Docker, WebSockets
 
 **Highlights:**
-- Multi-stage pipeline with signal memory, RSS novelty triggers, batched verification, and structured skip / order logging
-- Polymarket unified paper path (ATM / causal / regime gates); concurrent multi-market legs with per-market caps; API vs worker split
-- Dual scheduler: AI cycles plus frequent price + paper **limit matching**; paper ledger economics as settlement truth
-- Operator dashboard with WebSocket updates, order insights / alignment, and **live runtime config**; Hetzner + Caddy + scripted deploy
+- Multi-step AI pipeline: find news → verify → pick market → score → decide (Python makes the final call)
+- Paper trading on Polymarket with real public prices; optional Kalshi / Bitvavo paths in the same app
+- Live operator dashboard (prices, P&L, why trades were skipped) plus API / worker split for reliability
+- Docker deploy on a VPS with tests and post-deploy checks
 
 ---
 
